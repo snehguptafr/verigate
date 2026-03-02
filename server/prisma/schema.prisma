@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Tenant {
+  id        String    @id @default(cuid())
+  name      String
+  createdAt DateTime  @default(now())
+  users     User[]
+  visitors  Visitor[]
+  visits    Visit[]
+}
+
+model User {
+  id       String  @id @default(cuid())
+  tenantId String
+  name     String
+  email    String  @unique
+  phone    String
+  role     Role    @default(HOST)
+  tenant   Tenant  @relation(fields: [tenantId], references: [id])
+  visits   Visit[]
+}
+
+model Visitor {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  email     String
+  phone     String
+  createdAt DateTime @default(now())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  visits    Visit[]
+}
+
+model Visit {
+  id        String      @id @default(cuid())
+  tenantId  String
+  visitorId String
+  hostId    String
+  purpose   String
+  status    VisitStatus @default(PENDING)
+  checkIn   DateTime    @default(now())
+  checkOut  DateTime?
+  tenant    Tenant      @relation(fields: [tenantId], references: [id])
+  visitor   Visitor     @relation(fields: [visitorId], references: [id])
+  host      User        @relation(fields: [hostId], references: [id])
+}
+
+enum Role {
+  HOST
+  ADMIN
+}
+
+enum VisitStatus {
+  PENDING
+  APPROVED
+  DENIED
+  COMPLETED
+}
