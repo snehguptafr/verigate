@@ -1,15 +1,17 @@
 import { Router } from "express"
 import prisma from "../lib/prisma"
+import { io } from "../index"
 
 const router = Router()
 
 router.post("/", async (req, res) => {
     const { tenantId, visitorId, hostId, purpose } = req.body;
     try {
-        const visit = prisma.visit.create({
+        const visit = await prisma.visit.create({
             data: { tenantId, visitorId, hostId, purpose, status: "PENDING" },
             include: { visitor: true, host: true }
         })
+        io.to(hostId).emit("visitor-arrived", visit)
         res.json(visit)
     } catch (e) {
         res.status(500).json({ error: "Failed to create visit", details: e })
