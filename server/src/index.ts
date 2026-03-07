@@ -9,8 +9,8 @@ import usersRouter from "./routes/users"
 const app = express()
 const httpServer = createServer(app)
 
-export const io = new Server(httpServer,  {
-  cors: {origin: "*", methods: ["GET", "POST"]}
+export const io = new Server(httpServer, {
+  cors: { origin: "*", methods: ["GET", "POST"] }
 })
 
 app.use(cors())
@@ -24,7 +24,12 @@ io.on("connection", socket => {
     console.log(`user ${userId} joined their room`)
   })
 
-  socket.on("disconnect", ()=>{
+  socket.on("join-visit", (visitId: string) => {
+    socket.join(`visit-${visitId}`)
+    console.log(`Socket joined visit room: visit-${visitId}`)
+  })
+
+  socket.on("disconnect", () => {
     console.log("client disconnected:", socket.id)
   })
 })
