@@ -1,29 +1,38 @@
 "use client"
 import { useEffect, useState } from "react"
 import socket from "@/lib/socket"
+import { useAuth } from "@/lib/useAuth"
+import { logout } from "@/lib/auth"
 
-const HOST_ID = "host_1"
+
 const API = `http://${typeof window !== "undefined" ? window.location.hostname : "localhost"}:4000/api`
 
 export default function Dashboard() {
+  const {user, checking} = useAuth()
   const [notifications, setNotifications] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   // fetch existing visits on load
   useEffect(() => {
-    fetch(`${API}/visits/host/${HOST_ID}`)
+    if(!user) return
+
+    fetch(`${API}/visits/host/${user.userId}`)
       .then(r => r.json())
       .then(data => {
+        console.log("visits response:", data)
         setNotifications(data)
         setLoading(false)
       })
-  }, [])
+  }, [user])
 
   // socket for new visits coming in live
   useEffect(() => {
-    socket.emit("join", HOST_ID)
+    if(!user) return
+    console.log("joining room: ", user.userId)
+    socket.emit("join", user.userId)
 
     socket.on("visitor-arrived", (visit) => {
+      console.log("visitor arrived:", visit)
       setNotifications(prev => {
         // avoid duplicates if visit already loaded from DB
         const exists = prev.find(n => n.id === visit.id)
@@ -33,7 +42,7 @@ export default function Dashboard() {
     })
 
     return () => { socket.off("visitor-arrived") }
-  }, [])
+  }, [user])
 
   const updateStatus = async (visitId: string, status: "APPROVED" | "DENIED") => {
     await fetch(`${API}/visits/${visitId}/status`, {
@@ -47,7 +56,7 @@ export default function Dashboard() {
     )
   }
 
-  if (loading) return (
+  if (checking || loading) return (
     <div className="flex items-center justify-center h-screen">
       <p className="text-gray-400">Loading...</p>
     </div>
@@ -55,7 +64,15 @@ export default function Dashboard() {
 
   return (
     <div className="p-8 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Host Dashboard</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Host Dashboard</h1>
+        <button
+          onClick={logout}
+          className="text-sm text-gray-500 hover:text-black"
+        >
+          Logout
+        </button>
+      </div>
       {notifications.length === 0 ? (
         <p className="text-gray-400">No visitors yet. Waiting...</p>
       ) : (
