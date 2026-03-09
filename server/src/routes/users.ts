@@ -15,4 +15,13 @@ router.get("/", async(req, res) => {
     }
 })
 
+router.get("/tenants", async(req, res) => {
+    try{
+        const tenants = await prisma.tenant.findMany({})
+        res.json(tenants)
+    }catch(e){
+        res.status(500).json({error: "failed to fetch tenants"})
+    }
+})
+
 export default router;
