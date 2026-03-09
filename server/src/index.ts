@@ -5,6 +5,7 @@ import { Server } from "socket.io"
 import visitorsRouter from "./routes/visitors"
 import visitsRouter from "./routes/visits"
 import usersRouter from "./routes/users"
+import authRouter from "./routes/auth"
 
 const app = express()
 const httpServer = createServer(app)
@@ -42,5 +43,6 @@ app.get("/health", (req, res) => {
 app.use("/api/visitors", visitorsRouter);
 app.use("/api/visits", visitsRouter)
 app.use("/api/users", usersRouter)
+app.use("/api/auth", authRouter)
 
 httpServer.listen(4000, () => console.log("Backend running on port 4000"))
