@@ -1,66 +1,96 @@
-"use client"
-import { useEffect, useState } from "react"
-import socket from "@/lib/socket"
-import { useAuth } from "@/lib/useAuth"
-import { logout } from "@/lib/auth"
+"use client";
+import { useEffect, useState } from "react";
+import socket from "@/lib/socket";
+import { useAuth } from "@/lib/useAuth";
+import { logout } from "@/lib/auth";
 
-
-const API = `http://${typeof window !== "undefined" ? window.location.hostname : "localhost"}:4000/api`
+const API = `http://${
+  typeof window !== "undefined" ? window.location.hostname : "localhost"
+}:4000/api`;
 
 export default function Dashboard() {
-  const {user, checking} = useAuth()
-  const [notifications, setNotifications] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const { user, checking } = useAuth();
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // fetch existing visits on load
   useEffect(() => {
-    if(!user) return
+    if (!user) return;
 
     fetch(`${API}/visits/host/${user.userId}`)
-      .then(r => r.json())
-      .then(data => {
-        console.log("visits response:", data)
-        setNotifications(data)
-        setLoading(false)
-      })
-  }, [user])
+      .then((r) => r.json())
+      .then((data) => {
+        console.log("visits response:", data);
+        setNotifications(data);
+        setLoading(false);
+      });
+  }, [user]);
 
   // socket for new visits coming in live
   useEffect(() => {
-    if(!user) return
-    console.log("joining room: ", user.userId)
-    socket.emit("join", user.userId)
+    if (!user) return;
+    console.log("joining room: ", user.userId);
+    socket.emit("join", user.userId);
 
     socket.on("visitor-arrived", (visit) => {
-      console.log("visitor arrived:", visit)
-      setNotifications(prev => {
+      console.log("visitor arrived:", visit);
+      setNotifications((prev) => {
         // avoid duplicates if visit already loaded from DB
-        const exists = prev.find(n => n.id === visit.id)
-        if (exists) return prev
-        return [visit, ...prev]
-      })
-    })
+        const exists = prev.find((n) => n.id === visit.id);
+        if (exists) return prev;
+        return [visit, ...prev];
+      });
+    });
 
-    return () => { socket.off("visitor-arrived") }
-  }, [user])
+    socket.on("visit-actioned", (visit) => {
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === visit.id ? { ...n, status: visit.status } : n
+        )
+      );
+    });
 
-  const updateStatus = async (visitId: string, status: "APPROVED" | "DENIED") => {
-    await fetch(`${API}/visits/${visitId}/status`, {
+    socket.on("visitor-left", (visit) => {
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === visit.id ? { ...n, status: "COMPLETED" } : n))
+      );
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("visitor-arrived");
+      socket.off("visitor-left"); // add this
+    };
+  }, [user]);
+
+  const updateStatus = async (
+    visitId: string,
+    status: "APPROVED" | "DENIED"
+  ) => {
+    const res = await fetch(`${API}/visits/${visitId}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status })
-    })
+      body: JSON.stringify({ status }),
+    });
 
-    setNotifications(prev =>
-      prev.map(n => n.id === visitId ? { ...n, status } : n)
-    )
-  }
+    if (res.status === 409) {
+      // already actioned by another window — just refresh state
+      const data = await res.json();
+      console.log(data.error);
+      return;
+    }
 
-  if (checking || loading) return (
-    <div className="flex items-center justify-center h-screen">
-      <p className="text-gray-400">Loading...</p>
-    </div>
-  )
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === visitId ? { ...n, status } : n))
+    );
+  };
+
+  if (checking || loading)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-400">Loading...</p>
+      </div>
+    );
 
   return (
     <div className="p-8 max-w-2xl mx-auto">
@@ -80,7 +110,9 @@ export default function Dashboard() {
           {notifications.map((n, i) => (
             <div key={i} className="border rounded-xl p-4 shadow-sm bg-white">
               <p className="font-semibold text-lg">{n.visitor.name}</p>
-              <p className="text-gray-500 text-sm">{n.visitor.email} · {n.visitor.phone}</p>
+              <p className="text-gray-500 text-sm">
+                {n.visitor.email} · {n.visitor.phone}
+              </p>
               <p className="text-gray-600 mt-1">Purpose: {n.purpose}</p>
 
               {n.status === "PENDING" && (
@@ -111,10 +143,16 @@ export default function Dashboard() {
                   Denied
                 </span>
               )}
+
+              {n.status === "COMPLETED" && (
+                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full mt-2 inline-block">
+                  Checked Out
+                </span>
+              )}
             </div>
           ))}
         </div>
       )}
     </div>
-  )
+  );
 }
