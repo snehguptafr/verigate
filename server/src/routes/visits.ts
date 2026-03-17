@@ -89,13 +89,13 @@ router.patch("/:id/checkout", async (req, res) => {
 })
 
 router.get("/active", async (req, res) => {
-  const { email } = req.query
+  const { phone } = req.query
 
   try {
     const visit = await prisma.visit.findFirst({
       where: {
         status: "APPROVED",
-        visitor: { email: email as string }
+        visitor: { phone: phone as string }
       },
       include: { visitor: true, host: true },
       orderBy: { checkIn: "desc" }
