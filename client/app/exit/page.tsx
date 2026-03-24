@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-const getAPI = () => `http://${window.location.hostname}:4000/api`;
+const getAPI = () => `https://${window.location.hostname}:4000/api`;
 
 export default function ExitPage() {
   const [phone, setPhone] = useState("");

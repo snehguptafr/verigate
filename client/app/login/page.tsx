@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { setToken } from "@/lib/auth";
 
-const API = `http://${
+const API = `https://${
   typeof window !== "undefined" ? window.location.hostname : "localhost"
 }:4000/api`;
 

@@ -1,8 +1,8 @@
 import { io } from "socket.io-client"
 
 const URL = typeof window !== "undefined" 
-  ? `http://${window.location.hostname}:4000`
-  : "http://localhost:4000"
+  ? `https://${window.location.hostname}:4000`
+  : "https://localhost:4000"
 
 const socket = io(URL)
 
