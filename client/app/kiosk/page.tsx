@@ -31,8 +31,6 @@ export default function KioskPage() {
   const [hostVisitCounts, setHostVisitCounts] = useState<
     Record<string, number>
   >({});
-  const [pendingVisitorId, setPendingVisitorId] = useState<string | null>(null);
-  const [pendingTenantId, setPendingTenantId] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -193,8 +191,6 @@ export default function KioskPage() {
     });
     setErrors({});
     setLoading(false);
-    setPendingVisitorId(null);
-    setPendingTenantId(null);
   };
 
   // sorted hosts dropdown — most visited on top
