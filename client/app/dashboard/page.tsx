@@ -1,10 +1,11 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { useEffect, useState } from "react";
 import socket from "@/lib/socket";
 import { useAuth } from "@/lib/useAuth";
 import { logout } from "@/lib/auth";
 
-const API = `http://${
+const API = `https://${
   typeof window !== "undefined" ? window.location.hostname : "localhost"
 }:4000/api`;
 
@@ -20,7 +21,6 @@ export default function Dashboard() {
     fetch(`${API}/visits/host/${user.userId}`)
       .then((r) => r.json())
       .then((data) => {
-        console.log("visits response:", data);
         setNotifications(data);
         setLoading(false);
       });
@@ -29,11 +29,9 @@ export default function Dashboard() {
   // socket for new visits coming in live
   useEffect(() => {
     if (!user) return;
-    console.log("joining room: ", user.userId);
     socket.emit("join", user.userId);
 
     socket.on("visitor-arrived", (visit) => {
-      console.log("visitor arrived:", visit);
       setNotifications((prev) => {
         // avoid duplicates if visit already loaded from DB
         const exists = prev.find((n) => n.id === visit.id);
@@ -109,6 +107,17 @@ export default function Dashboard() {
         <div className="flex flex-col gap-4">
           {notifications.map((n, i) => (
             <div key={i} className="border rounded-xl p-4 shadow-sm bg-white">
+              {n.visitor.photoUrl ? (
+                <img
+                alt="user-img"
+                  src={n.visitor.photoUrl}
+                  className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                  <span className="text-2xl text-gray-400">👤</span>
+                </div>
+              )}
               <p className="font-semibold text-lg">{n.visitor.name}</p>
               <p className="text-gray-500 text-sm">
                 {n.visitor.email} · {n.visitor.phone}
