@@ -35,6 +35,7 @@ model Visitor {
   name      String
   email     String
   phone     String
+  photoUrl  String?  // nullable — only set after first visit
   createdAt DateTime @default(now())
   tenant    Tenant   @relation(fields: [tenantId], references: [id])
   visits    Visit[]
