@@ -57,7 +57,7 @@ router.get("/host/:hostId", async (req, res) => {
     const visits = await prisma.visit.findMany({
       where: {
         hostId,
-        status: { in: ["PENDING", "APPROVED", "DENIED"] }
+        status: { in: ["PENDING", "APPROVED", "DENIED", "COMPLETED"] }
       },
       include: { visitor: true, host: true },
       orderBy: { checkIn: "desc" }

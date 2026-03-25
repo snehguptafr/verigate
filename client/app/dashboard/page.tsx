@@ -57,13 +57,13 @@ export default function Dashboard() {
     return () => {
       socket.off("connect");
       socket.off("visitor-arrived");
-      socket.off("visitor-left"); // add this
+      socket.off("visitor-left");
     };
   }, [user]);
 
   const updateStatus = async (
     visitId: string,
-    status: "APPROVED" | "DENIED"
+    status: "APPROVED" | "DENIED" | "COMPLETED"
   ) => {
     const res = await fetch(`${API}/visits/${visitId}/status`, {
       method: "PATCH",
@@ -107,56 +107,60 @@ export default function Dashboard() {
         <div className="flex flex-col gap-4">
           {notifications.map((n, i) => (
             <div key={i} className="border rounded-xl p-4 shadow-sm bg-white">
+              <div className="flex gap-4 mb-3">
               {n.visitor.photoUrl ? (
                 <img
                 alt="user-img"
-                  src={n.visitor.photoUrl}
-                  className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
+                src={n.visitor.photoUrl}
+                className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
                 />
               ) : (
                 <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                  <span className="text-2xl text-gray-400">👤</span>
+                <span className="text-2xl text-gray-400">👤</span>
                 </div>
               )}
-              <p className="font-semibold text-lg">{n.visitor.name}</p>
-              <p className="text-gray-500 text-sm">
+              <div>
+                <p className="font-semibold text-lg">{n.visitor.name}</p>
+                <p className="text-gray-500 text-sm">
                 {n.visitor.email} · {n.visitor.phone}
-              </p>
-              <p className="text-gray-600 mt-1">Purpose: {n.purpose}</p>
+                </p>
+                <p className="text-gray-600 mt-1">Purpose: {n.purpose}</p>
+              </div>
+              </div>
 
               {n.status === "PENDING" && (
-                <div className="flex gap-2 mt-3">
-                  <button
-                    onClick={() => updateStatus(n.id, "APPROVED")}
-                    className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-600"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => updateStatus(n.id, "DENIED")}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-600"
-                  >
-                    Deny
-                  </button>
-                </div>
+              <div className="flex gap-2 mt-3">
+                <button
+                onClick={() => updateStatus(n.id, "APPROVED")}
+                className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-600"
+                >
+                Approve
+                </button>
+                <button
+                onClick={() => updateStatus(n.id, "DENIED")}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-600"
+                >
+                Deny
+                </button>
+              </div>
               )}
 
               {n.status === "APPROVED" && (
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mt-2 inline-block">
-                  Approved
-                </span>
+              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mt-2 inline-block">
+                Approved
+              </span>
               )}
 
               {n.status === "DENIED" && (
-                <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full mt-2 inline-block">
-                  Denied
-                </span>
+              <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full mt-2 inline-block">
+                Denied
+              </span>
               )}
 
               {n.status === "COMPLETED" && (
-                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full mt-2 inline-block">
-                  Checked Out
-                </span>
+              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full mt-2 inline-block">
+                Checked Out
+              </span>
               )}
             </div>
           ))}
