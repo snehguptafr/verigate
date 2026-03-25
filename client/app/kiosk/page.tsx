@@ -211,9 +211,8 @@ export default function KioskPage() {
           <div className="flex flex-col gap-4">
             <div>
               <input
-                className={`border p-3 rounded-lg w-full ${
-                  errors.phone ? "border-red-400" : ""
-                }`}
+                className={`border p-3 rounded-lg w-full ${errors.phone ? "border-red-400" : ""
+                  }`}
                 placeholder="10 digit phone number"
                 type="tel"
                 value={form.phone}
@@ -268,9 +267,8 @@ export default function KioskPage() {
           <div className="flex flex-col gap-4">
             <div>
               <select
-                className={`border p-3 rounded-lg w-full ${
-                  errors.tenantId ? "border-red-400" : ""
-                }`}
+                className={`border p-3 rounded-lg w-full ${errors.tenantId ? "border-red-400" : ""
+                  }`}
                 value={form.tenantId}
                 onChange={(e) =>
                   setForm({ ...form, tenantId: e.target.value, hostId: "" })
@@ -290,9 +288,8 @@ export default function KioskPage() {
 
             <div>
               <select
-                className={`border p-3 rounded-lg w-full ${
-                  errors.hostId ? "border-red-400" : ""
-                }`}
+                className={`border p-3 rounded-lg w-full ${errors.hostId ? "border-red-400" : ""
+                  }`}
                 value={form.hostId}
                 disabled={!form.tenantId}
                 onChange={(e) => setForm({ ...form, hostId: e.target.value })}
@@ -302,9 +299,8 @@ export default function KioskPage() {
                   <option key={h.id} value={h.id}>
                     {h.name}
                     {hostVisitCounts[h.id]
-                      ? ` (${hostVisitCounts[h.id]} visit${
-                          hostVisitCounts[h.id] > 1 ? "s" : ""
-                        })`
+                      ? ` (${hostVisitCounts[h.id]} visit${hostVisitCounts[h.id] > 1 ? "s" : ""
+                      })`
                       : ""}
                   </option>
                 ))}
@@ -316,9 +312,8 @@ export default function KioskPage() {
 
             <div>
               <input
-                className={`border p-3 rounded-lg w-full ${
-                  errors.purpose ? "border-red-400" : ""
-                }`}
+                className={`border p-3 rounded-lg w-full ${errors.purpose ? "border-red-400" : ""
+                  }`}
                 placeholder="Purpose of visit"
                 value={form.purpose}
                 onChange={(e) => setForm({ ...form, purpose: e.target.value })}
@@ -360,9 +355,8 @@ export default function KioskPage() {
           <div className="flex flex-col gap-4">
             <div>
               <input
-                className={`border p-3 rounded-lg w-full ${
-                  errors.name ? "border-red-400" : ""
-                }`}
+                className={`border p-3 rounded-lg w-full ${errors.name ? "border-red-400" : ""
+                  }`}
                 placeholder="Full Name"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -374,9 +368,8 @@ export default function KioskPage() {
 
             <div>
               <input
-                className={`border p-3 rounded-lg w-full ${
-                  errors.email ? "border-red-400" : ""
-                }`}
+                className={`border p-3 rounded-lg w-full ${errors.email ? "border-red-400" : ""
+                  }`}
                 placeholder="Email"
                 type="email"
                 value={form.email}
@@ -398,9 +391,8 @@ export default function KioskPage() {
 
             <div>
               <select
-                className={`border p-3 rounded-lg w-full ${
-                  errors.tenantId ? "border-red-400" : ""
-                }`}
+                className={`border p-3 rounded-lg w-full ${errors.tenantId ? "border-red-400" : ""
+                  }`}
                 value={form.tenantId}
                 onChange={(e) =>
                   setForm({ ...form, tenantId: e.target.value, hostId: "" })
@@ -420,9 +412,8 @@ export default function KioskPage() {
 
             <div>
               <select
-                className={`border p-3 rounded-lg w-full ${
-                  errors.hostId ? "border-red-400" : ""
-                }`}
+                className={`border p-3 rounded-lg w-full ${errors.hostId ? "border-red-400" : ""
+                  }`}
                 value={form.hostId}
                 disabled={!form.tenantId}
                 onChange={(e) => setForm({ ...form, hostId: e.target.value })}
@@ -441,9 +432,8 @@ export default function KioskPage() {
 
             <div>
               <input
-                className={`border p-3 rounded-lg w-full ${
-                  errors.purpose ? "border-red-400" : ""
-                }`}
+                className={`border p-3 rounded-lg w-full ${errors.purpose ? "border-red-400" : ""
+                  }`}
                 placeholder="Purpose of visit"
                 value={form.purpose}
                 onChange={(e) => setForm({ ...form, purpose: e.target.value })}
